@@ -100,8 +100,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Identity.Client">
+      <Version>4.47.2</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Identity.Client.Broker">
       <Version>4.47.2-preview</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Identity.Client.NativeInterop">
+      <Version>0.13.0</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

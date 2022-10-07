@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -23,33 +24,81 @@ namespace WPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static readonly string s_authority = "https://login.microsoftonline.com/common/";
+        private static readonly IEnumerable<string> s_scopes = new[] { "user.read" };
+
         public MainWindow()
         {
             InitializeComponent();
-
-            GetAccount("this-is-a-fake-client-id");
         }
 
         async void GetAccount(string clientId)
         {
-            IPublicClientApplication client = PublicClientApplicationBuilder
-              .Create(clientId)
-              .WithAuthority("https://login.microsoftonline.com/consumers")
-              .WithBrokerPreview(true)   // this method exists in Microsoft.Identity.Client.Broker package
-              .Build();
+            var pca = PublicClientApplicationBuilder.Create(clientId)
+                .WithAuthority(s_authority)
+                .WithBrokerPreview(true)
+                .WithLogging((x, y, z) => Debug.WriteLine($"{x} {y}"), LogLevel.Verbose, true)
+                .Build();
 
-            IntPtr windowHandle = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+            IEnumerable<IAccount> accounts = await pca.GetAccountsAsync().ConfigureAwait(true);
+            var acc = accounts.FirstOrDefault();
 
-            var result = await client.AcquireTokenInteractive(new string[] { "openid",
-                "email",
-                "profile",
-                "offline_access", })
-                 .WithParentActivityOrWindow(windowHandle)
-                 .WithPrompt(Prompt.NoPrompt)
-                 .WithAccount(PublicClientApplication.OperatingSystemAccount)
-                 .ExecuteAsync();
+            AuthenticationResult result = null;
 
-            Debug.WriteLine(result);
+            try
+            {
+                result = await pca
+                    .AcquireTokenSilent(s_scopes, acc)
+                    .ExecuteAsync()
+                    .ConfigureAwait(false);
+            }
+            catch (MsalUiRequiredException)
+            {
+                try
+                {
+                    IntPtr handle = new WindowInteropHelper(this).Handle;
+
+                    var task = await Dispatcher.InvokeAsync(() =>
+                        pca.AcquireTokenInteractive(s_scopes)
+                                     .WithParentActivityOrWindow(handle)
+                                     .WithAccount(acc)
+                                     .ExecuteAsync());
+
+                    result = await task.ConfigureAwait(false);
+
+                }
+                catch (MsalClientException ex1)
+                {
+                    DisplayMessage(ex1.Message.ToString());
+                    return;
+                }
+                catch (Exception ex3)
+                {
+                    DisplayMessage(ex3.Message.ToString());
+                    return;
+                }
+            }
+            catch (Exception ex2)
+            {
+                DisplayMessage(ex2.Message.ToString());
+                return;
+            }
+
+            DisplayMessage($"Success! We have a token for {result.Account.Username} valid until {result.ExpiresOn}");
+        }
+
+        private void DisplayMessage(string message)
+        {
+            Dispatcher.Invoke(
+                   () =>
+                   {
+                       Log.Text = message;
+                   });
+        }
+
+        private void AtsAti_Runtime_Click(object sender, RoutedEventArgs e)
+        {
+            GetAccount("4b0db8c2-9f26-4417-8bde-3f0e3656f8e0");
         }
     }
 }

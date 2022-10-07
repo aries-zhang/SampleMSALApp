@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Button Content="ATS ATI Runtime" HorizontalAlignment="Left" Margin="42,24,0,0" VerticalAlignment="Top" Width="100" Click="AtsAti_Runtime_Click"/>
+        <TextBox x:Name="Log" HorizontalAlignment="Left" Height="313" Margin="41,61,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="741"/>
     </Grid>
 </Window>
