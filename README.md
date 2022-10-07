@@ -12,5 +12,6 @@ DllNotFoundException: Unable to load DLL 'msalruntime_x86': The specified module
 ## Steps to reproduce
 
 1. Clone this repo.
-2. Build the solution to restore all nuget packages.
-3. Start the project "WPF.Package".
+2. Replace the [fake client id](./WPF/MainWindow.xaml.cs#L30) with a valid client id.
+3. Build the solution to restore all nuget packages.
+4. Start the project "WPF.Package".
