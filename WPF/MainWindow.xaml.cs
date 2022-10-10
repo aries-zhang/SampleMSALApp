@@ -40,16 +40,23 @@ namespace WPF
 
             IntPtr windowHandle = new System.Windows.Interop.WindowInteropHelper(this).Handle;
 
-            var result = await client.AcquireTokenInteractive(new string[] { "openid",
+            try
+            {
+                var result = await client.AcquireTokenInteractive(new string[] { "openid",
                 "email",
                 "profile",
                 "offline_access", })
-                 .WithParentActivityOrWindow(windowHandle)
-                 .WithPrompt(Prompt.NoPrompt)
-                 .WithAccount(PublicClientApplication.OperatingSystemAccount)
-                 .ExecuteAsync();
+                     .WithParentActivityOrWindow(windowHandle)
+                     .WithPrompt(Prompt.NoPrompt)
+                     .WithAccount(PublicClientApplication.OperatingSystemAccount)
+                     .ExecuteAsync();
 
-            Debug.WriteLine(result);
+                MessageBox.Show(Convert.ToString(result), "", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message+ex.StackTrace, "", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
