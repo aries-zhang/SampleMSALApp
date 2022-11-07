@@ -79,4 +79,12 @@
   <ItemGroup>
     <ProjectReference Include="..\WPF\WPF.csproj" />
   </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Identity.Client.NativeInterop" Version="0.13.0" GeneratePathProperty="true"/>
+	</ItemGroup>
+	<ItemGroup>
+		<ContentWithTargetPath Include="$(PkgMicrosoft_Identity_Client_NativeInterop)\runtimes\win-x86\native\*" TargetPath="runtimes\win-x86\native\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+		<ContentWithTargetPath Include="$(PkgMicrosoft_Identity_Client_NativeInterop)\runtimes\win-x64\native\*" TargetPath="runtimes\win-x64\native\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+		<ContentWithTargetPath Include="$(PkgMicrosoft_Identity_Client_NativeInterop)\runtimes\win-arm64\native\*" TargetPath="runtimes\win-arm64\native\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
 </Project>

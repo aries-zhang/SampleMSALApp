@@ -27,7 +27,7 @@ namespace WPF
         {
             InitializeComponent();
 
-            GetAccount("this-is-a-fake-client-id");
+            GetAccount("4b0db8c2-9f26-4417-8bde-3f0e3656f8e0");
         }
 
         async void GetAccount(string clientId)
