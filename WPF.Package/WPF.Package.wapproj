@@ -109,16 +109,13 @@
     <Content Include="Images\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Images\StoreLogo.png" />
     <Content Include="Images\Wide310x150Logo.scale-200.png" />
-    <Content Include="msalruntime.dll" />
-    <Content Include="msalruntime_arm64.dll" />
-    <Content Include="msalruntime_x86.dll" />
     <None Include="WPF.Package_TemporaryKey.pfx" />
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
   <ItemGroup>
     <PackageReference Include="Microsoft.Identity.Client" Version="4.47.2" />
     <PackageReference Include="Microsoft.Identity.Client.Broker" Version="4.47.2-preview" />
-    <PackageReference Include="Microsoft.Identity.Client.NativeInterop" Version="0.13.0" />
+    <PackageReference Include="Microsoft.Identity.Client.NativeInterop" Version="0.13.4" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.1" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
