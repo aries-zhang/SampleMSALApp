@@ -63,6 +63,7 @@ namespace WPF
                         return pca.AcquireTokenInteractive(s_scopes)
                                      .WithParentActivityOrWindow(handle)
                                      .WithAccount(acc)
+                                     .WithPrompt(Prompt.NoPrompt)
                                      .ExecuteAsync();
                     });
 
