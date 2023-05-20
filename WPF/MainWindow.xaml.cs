@@ -1,5 +1,5 @@
 ﻿using Microsoft.Identity.Client;
-using Microsoft.Identity.Client.Broker;
+using Microsoft.Identity.Client.Desktop;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,7 +24,7 @@ namespace WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly string s_authority = "https://login.microsoftonline.com/common/";
+        private static readonly string s_authority = "https://login.microsoftonline.com/consumers";
         private static readonly IEnumerable<string> s_scopes = new[] { "user.read" };
 
         public MainWindow()
@@ -36,12 +36,11 @@ namespace WPF
         {
             var pca = PublicClientApplicationBuilder.Create(clientId)
                 .WithAuthority(s_authority)
-                .WithBrokerPreview(true)
+                .WithWindowsBroker()
                 .WithLogging((x, y, z) => Debug.WriteLine($"{x} {y}"), LogLevel.Verbose, true)
                 .Build();
 
-            IEnumerable<IAccount> accounts = await pca.GetAccountsAsync().ConfigureAwait(true);
-            var acc = accounts.FirstOrDefault();
+            var acc = PublicClientApplication.OperatingSystemAccount;
 
             AuthenticationResult result = null;
 
@@ -56,16 +55,26 @@ namespace WPF
             {
                 try
                 {
-                    IntPtr handle = new WindowInteropHelper(this).Handle;
 
                     var task = await Dispatcher.InvokeAsync(() =>
-                        pca.AcquireTokenInteractive(s_scopes)
+                    {
+                        IntPtr handle = new WindowInteropHelper(this).Handle;
+
+                        return pca.AcquireTokenInteractive(s_scopes)
                                      .WithParentActivityOrWindow(handle)
                                      .WithAccount(acc)
-                                     .ExecuteAsync());
+                                     .WithPrompt(Prompt.NoPrompt)
+                                     .ExecuteAsync();
+                    });
 
                     result = await task.ConfigureAwait(false);
 
+                }
+                catch (MsalServiceException ex0) when (ex0.ErrorCode == "wam_msa_error")
+                {
+                    // When system account is AAD, it should fail with this error code here.
+                    DisplayMessage(ex0.Message.ToString());
+                    return;
                 }
                 catch (MsalClientException ex1)
                 {
